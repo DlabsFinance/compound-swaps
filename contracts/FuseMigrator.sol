@@ -7,6 +7,8 @@ import { CTokenInterface, CErc20Interface, CEtherInterface } from "./interfaces/
 import { IFuseMigrator } from "./interfaces/IFuseMigrator.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
+/// @author Ganesh Gautham Elango
+/// @title Migrates 1 cToken to another if both have the same underlying token
 contract FuseMigrator is IFuseMigrator, Ownable {
     using SafeERC20 for IERC20;
 
