@@ -39,8 +39,13 @@ contract CTokenSwap is ICTokenSwap, IUniswapV3FlashCallback, Ownable {
     /// @notice Performs collateral swap of 2 cTokens
     /// @dev This may put the sender at liquidation risk if they have debt
     /// @param params Collateral swap params
+    /// @param recipient Address receiving the new cTokens
     /// @return Amount of cToken1 minted and received
-    function collateralSwap(CollateralSwapParams calldata params) external override returns (uint256) {
+    function collateralSwap(CollateralSwapParams calldata params, address recipient)
+        external
+        override
+        returns (uint256)
+    {
         // Transfers cToken0Amount of cToken0 from msg.sender to this contract
         require(
             CTokenInterface(params.cToken0).transferFrom(msg.sender, address(this), params.cToken0Amount),
@@ -82,8 +87,8 @@ contract CTokenSwap is ICTokenSwap, IUniswapV3FlashCallback, Ownable {
         }
         // Amount of cToken1 minted
         uint256 cToken1Balance = CTokenInterface(params.cToken1).balanceOf(address(this));
-        // Transfer cToken1Balance of cToken1 to msg.sender
-        require(CTokenInterface(params.cToken1).transfer(msg.sender, cToken1Balance), "CTokenSwap: Transfer failed");
+        // Transfer cToken1Balance of cToken1 to recipient
+        require(CTokenInterface(params.cToken1).transfer(recipient, cToken1Balance), "CTokenSwap: Transfer failed");
         // Get cToken0 balance of this contract
         uint256 cToken0Balance = CTokenInterface(params.cToken0).balanceOf(address(this));
         // If cToken0Balance is greater than 0, transfer the amount back to msg.sender
@@ -95,7 +100,7 @@ contract CTokenSwap is ICTokenSwap, IUniswapV3FlashCallback, Ownable {
             );
         }
         // Emit event
-        emit CollateralSwap(msg.sender, params.cToken0, params.cToken1, params.token0Amount);
+        emit CollateralSwap(msg.sender, recipient, params.cToken0, params.cToken1, params.token0Amount);
         // Return cToken1Balance
         return cToken1Balance;
     }
@@ -189,7 +194,7 @@ contract CTokenSwap is ICTokenSwap, IUniswapV3FlashCallback, Ownable {
             require(CTokenInterface(params.cToken0).transfer(sender, cToken0Balance), "CTokenSwap: Transfer failed");
         }
         // Emit event
-        emit CollateralSwap(sender, params.cToken0, params.cToken1, params.token0Amount);
+        emit CollateralSwap(sender, sender, params.cToken0, params.cToken1, params.token0Amount);
     }
 
     /// @notice Transfer a tokens balance left on this contract to the owner

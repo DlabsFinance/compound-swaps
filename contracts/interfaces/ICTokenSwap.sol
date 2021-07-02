@@ -30,16 +30,18 @@ interface ICTokenSwap {
 
     /// @notice Emitted on each collateral swap
     /// @param sender msg.sender
+    /// @param recipient Address receiving the new cTokens
     /// @param cToken0 Token to swap from
     /// @param cToken1 Token to swap to
     /// @param amount Amount of token0 swapped
-    event CollateralSwap(address sender, address cToken0, address cToken1, uint256 amount);
+    event CollateralSwap(address sender, address recipient, address cToken0, address cToken1, uint256 amount);
 
     /// @notice Performs collateral swap of 2 cTokens
     /// @dev This may put the sender at liquidation risk if they have debt
     /// @param params Collateral swap params
+    /// @param recipient Address receiving the new cTokens
     /// @return Amount of cToken1 minted and received
-    function collateralSwap(CollateralSwapParams calldata params) external returns (uint256);
+    function collateralSwap(CollateralSwapParams calldata params, address recipient) external returns (uint256);
 
     /// @notice Performs collateral swap of 2 cTokens using a Uniswap V3 flash loan
     /// @dev This reduces the senders liquidation risk if they have debt
