@@ -2,13 +2,13 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
           cmd: install --ignore-engines # will run `yarn install` command
       - uses: borales/actions-yarn@v2.0.2
         with:
-          cmd: compile # will run `yarn compile` command
+          cmd: build # will run `yarn build` command
       - uses: borales/actions-yarn@v2.0.2
         with:
           cmd: test # will run `yarn test` command
