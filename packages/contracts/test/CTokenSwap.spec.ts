@@ -107,11 +107,13 @@ describe("unit/CTokenSwap", () => {
       expect(cUSDCBalanceCTokenSwap1).to.equal(BigNumber.from("0"));
     });
 
-    it("swap cUSDC to cDAI", async () => {
+    it("swap cUSDC to cDAI (to recipient)", async () => {
       const { cTokenSwap, DAI, USDC, cDAI, cUSDC, usdcAmount } = await loadFixture(cTokenSwapFixture);
 
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
-      const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(owner.address);
+      const cUSDCBalanceOwner0: BigNumber = await cUSDC.balanceOf(owner.address);
+      const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
+      const cDAIBalanceOwner0: BigNumber = await cDAI.balanceOf(owner.address);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cUSDC, usdcAmount);
       await cUSDC.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
@@ -135,8 +137,12 @@ describe("unit/CTokenSwap", () => {
 
       const cUSDCBalanceImpersonate1: BigNumber = await cUSDC.balanceOf(impersonateAddress);
       expect(cUSDCBalanceImpersonate1).to.be.lt(cUSDCBalanceImpersonate0);
-      const cDAIBalanceImpersonate1: BigNumber = await cDAI.balanceOf(owner.address);
-      expect(cDAIBalanceImpersonate1).to.be.gt(cDAIBalanceImpersonate0);
+      const cUSDCBalanceOwner1: BigNumber = await cUSDC.balanceOf(owner.address);
+      expect(cUSDCBalanceOwner1).to.equal(cUSDCBalanceOwner0);
+      const cDAIBalanceImpersonate1: BigNumber = await cDAI.balanceOf(impersonateAddress);
+      expect(cDAIBalanceImpersonate1).to.equal(cDAIBalanceImpersonate0);
+      const cDAIBalanceOwner1: BigNumber = await cDAI.balanceOf(owner.address);
+      expect(cDAIBalanceOwner1).to.be.gt(cDAIBalanceOwner0);
       const cUSDCBalanceCTokenSwap1: BigNumber = await cUSDC.balanceOf(cTokenSwap.address);
       expect(cUSDCBalanceCTokenSwap1).to.equal(BigNumber.from("0"));
       const cDAIBalanceCTokenSwap1: BigNumber = await cDAI.balanceOf(cTokenSwap.address);
@@ -179,11 +185,13 @@ describe("unit/CTokenSwap", () => {
       expect(cDAIBalanceCTokenSwap1).to.equal(BigNumber.from("0"));
     });
 
-    it("swap cDAI to cETH", async () => {
+    it("swap cDAI to cETH (to recipient)", async () => {
       const { cTokenSwap, DAI, cETH, cDAI, daiAmount } = await loadFixture(cTokenSwapFixture);
 
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
-      const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(owner.address);
+      const cDAIBalanceOwner0: BigNumber = await cDAI.balanceOf(owner.address);
+      const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
+      const cETHBalanceOwner0: BigNumber = await cETH.balanceOf(owner.address);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
       await cDAI.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
@@ -207,8 +215,12 @@ describe("unit/CTokenSwap", () => {
 
       const cDAIBalanceImpersonate1: BigNumber = await cDAI.balanceOf(impersonateAddress);
       expect(cDAIBalanceImpersonate1).to.be.lt(cDAIBalanceImpersonate0);
-      const cETHBalanceImpersonate1: BigNumber = await cETH.balanceOf(owner.address);
-      expect(cETHBalanceImpersonate1).to.be.gt(cETHBalanceImpersonate0);
+      const cDAIBalanceOwner1: BigNumber = await cDAI.balanceOf(owner.address);
+      expect(cDAIBalanceOwner1).to.equal(cDAIBalanceOwner0);
+      const cETHBalanceImpesonate1: BigNumber = await cETH.balanceOf(impersonateAddress);
+      expect(cETHBalanceImpesonate1).to.equal(cETHBalanceImpersonate0);
+      const cETHBalanceOwner1: BigNumber = await cETH.balanceOf(owner.address);
+      expect(cETHBalanceOwner1).to.be.gt(cETHBalanceOwner0);
       const cDAIBalanceCTokenSwap1: BigNumber = await cDAI.balanceOf(cTokenSwap.address);
       expect(cDAIBalanceCTokenSwap1).to.equal(BigNumber.from("0"));
       const cETHBalanceCTokenSwap1: BigNumber = await cETH.balanceOf(cTokenSwap.address);
