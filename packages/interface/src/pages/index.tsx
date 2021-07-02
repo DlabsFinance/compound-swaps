@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { siteURL } from "../constants";
+import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 
 const pageTitle: string = "Shakestats - Home";
@@ -19,6 +20,11 @@ function Home(): JSX.Element {
         <meta name="twitter:url" content={pageURL} />
         <meta name="twitter:description" content={pageDescription} />
       </Head>
+      <Header props={{ marginTop: 2 }}>
+        Swap your{" "}
+        <ExternalLink href={"https://compound.finance/"} text={"Compound"} />{" "}
+        collateral
+      </Header>
     </Layout>
   );
 }
