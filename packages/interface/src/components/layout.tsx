@@ -5,8 +5,8 @@ import NavBar from "./NavBar";
 import Footer from "./Footer";
 import { siteURL } from "../constants";
 
-const siteTwitter: string = "@Shakestats";
-const siteImageAlt: string = "Shakestats Logo";
+const siteTwitter: string = "@GauthamGE";
+const siteImageAlt: string = "Compound Logo";
 const siteLogo: string = `${siteURL}logo.png`;
 
 function Layout({ children }: { children: ReactNode }): JSX.Element {

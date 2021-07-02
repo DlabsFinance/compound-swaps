@@ -1,11 +1,13 @@
 import Head from "next/head";
 import { Box } from "@chakra-ui/react";
-import { Header } from "../components/Header";
+import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import { siteURL } from "../constants";
 
-const pageTitle: string = "Compound Swaps - Swap & Repay";
-const pageDescription: string = "404 Page Not Found";
+const pageTitle: string =
+  "Compound Swaps - Repay debt with collateral on Compound";
+const pageDescription: string =
+  "Compound Swaps - Collateral swaps and swap & repay debt with collateral on Compound";
 const pageURL: string = siteURL;
 
 function Repay(): JSX.Element {
@@ -22,7 +24,10 @@ function Repay(): JSX.Element {
         <meta name="twitter:description" content={pageDescription} />
       </Head>
       <Box p={2}>
-        <Header>Coming Soon</Header>
+        <Header>
+          Repay debt with collateral on{" "}
+          <ExternalLink href={"https://compound.finance/"} text={"Compound"} />
+        </Header>
       </Box>
     </Layout>
   );

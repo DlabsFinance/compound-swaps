@@ -3,8 +3,9 @@ import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 
-const pageTitle: string = "Shakestats - Home";
-const pageDescription: string = "Statistical data for the Handshake protocol.";
+const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
+const pageDescription: string =
+  "Compound Swaps - Collateral swaps and swap & repay debt with collateral on Compound";
 const pageURL: string = siteURL;
 
 function Home(): JSX.Element {

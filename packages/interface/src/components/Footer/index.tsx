@@ -13,7 +13,7 @@ function Footer(): JSX.Element {
     >
       <Box></Box>
       <Box>
-        <Link href="https://github.com/Rari-Capital/fuse-margin" isExternal>
+        <Link href="https://github.com/gg2001/compound-swaps" isExternal>
           <Text as="u">GitHub</Text>
         </Link>{" "}
         •{" "}
