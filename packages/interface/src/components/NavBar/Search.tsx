@@ -27,6 +27,7 @@ function Search({
     <InputGroup display={display}>
       <InputRightElement
         pointerEvents="none"
+        /* eslint-disable react/no-children-prop */
         children={<SearchIcon color={"purple"} />}
       />
       <Input

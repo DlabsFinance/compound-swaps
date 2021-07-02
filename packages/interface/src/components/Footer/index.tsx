@@ -6,23 +6,26 @@ function Footer(): JSX.Element {
       as={Stack}
       maxW={"6xl"}
       py={4}
-      direction={{ base: "row" }}
+      direction={{ base: "column", md: "row" }}
       spacing={4}
       justify={{ base: "center", md: "space-between" }}
       align={{ base: "center", md: "center" }}
     >
       <Box></Box>
       <Box>
-        <Link href="https://twitter.com/Shakestats" isExternal>
-          <Text as="u">Twitter</Text>
+        <Link href="https://github.com/Rari-Capital/fuse-margin" isExternal>
+          <Text as="u">GitHub</Text>
         </Link>{" "}
         •{" "}
-        <Link href="https://discord.com/invite/b9XryHrqAh" isExternal>
-          <Text as="u">Discord</Text>
+        <Link
+          href="https://etherscan.io/address/0xdC3d8ba3CBDa63953DE5456ae0a1a13E5cC796E8"
+          isExternal
+        >
+          <Text as="u">Etherscan</Text>
         </Link>{" "}
-        •{" "}
-        <Link href="mailto:handshakestats@gmail.com">
-          <Text as="u">Email</Text>
+        • By{" "}
+        <Link href="https://twitter.com/GauthamGE" isExternal>
+          <Text as="u">@GauthamGE</Text>
         </Link>
       </Box>
     </Container>

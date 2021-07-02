@@ -19,59 +19,20 @@ import Search from "./Search";
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Home",
+    label: "Swap",
     href: "/",
   },
   {
-    label: "Search",
-    href: "/search",
+    label: "Swap & Repay",
+    href: "/repay",
   },
   {
-    label: "Lists",
-    children: [
-      {
-        label: "Top Names",
-        subLabel: "Ranked list of Handshakake names",
-        href: "/names",
-      },
-      {
-        label: "Secondary Market",
-        subLabel: "Top secondary market names",
-        href: "/secondary",
-      },
-      {
-        label: "Categories",
-        subLabel: "Names sorted by categories",
-        href: "/categories",
-      },
-    ],
+    label: "Docs ↗",
+    href: "https://github.com/gg2001/compound-swaps",
   },
   {
-    label: "Stats",
-    children: [
-      {
-        label: "Secondary Market",
-        subLabel: "Top secondary market names",
-        href: "/secondary",
-      },
-    ],
-  },
-  {
-    label: "Community",
-    children: [
-      {
-        label: "Twitter ↗",
-        href: "https://twitter.com/Shakestats",
-      },
-      {
-        label: "Discord ↗",
-        href: "https://discord.com/invite/b9XryHrqAh",
-      },
-      {
-        label: "Email ↗",
-        href: "mailto:handshakestats@gmail.com",
-      },
-    ],
+    label: "Compound ↗",
+    href: "https://app.compound.finance/",
   },
 ];
 

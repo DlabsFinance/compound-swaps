@@ -16,6 +16,7 @@ function DesktopNav({
           key={navItem.label}
           label={navItem.label}
           href={navItem.href}
+          /* eslint-disable react/no-children-prop */
           children={navItem.children}
           isItemCurrent={navItem.href ? isCurrent(navItem.href) : false}
           isCurrent={isCurrent}

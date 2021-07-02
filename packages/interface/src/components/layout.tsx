@@ -46,28 +46,18 @@ function Layout({ children }: { children: ReactNode }): JSX.Element {
         <meta name="twitter:image" content={siteLogo} />
         <meta name="twitter:image:alt" content={siteImageAlt} />
       </Head>
-      <Box position="relative">
-        <Center bg={"purple.100"}>
-          <Box w={1000}>
+      <Center>
+        <Box w={1000} position="relative" minHeight="100vh">
+          <Box marginBottom={40}>
             <NavBar />
-          </Box>
-        </Center>
-      </Box>
-      <Box position="relative">
-        <Center>
-          <Box marginBottom={40} w={1000} minHeight="70vh" overflow="hidden">
             {children}
           </Box>
           <Box position="absolute" bottom={0} width="100%">
-            <Center>
-              <Box w={1000}>
-                <Divider />
-                <Footer />
-              </Box>
-            </Center>
+            <Divider />
+            <Footer />
           </Box>
-        </Center>
-      </Box>
+        </Box>
+      </Center>
     </Box>
   );
 }

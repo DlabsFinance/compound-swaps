@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { DesktopNavItemChildren } from "./NavItemChildren";
 import { NavItem } from "./NavItemChildren";
+import { isLinkExternal } from "../../utils";
 
 function DesktopNavItem({
   label,
@@ -20,6 +21,8 @@ function DesktopNavItem({
   isCurrent: (url: string) => boolean;
   isItemCurrent: boolean;
 }): JSX.Element {
+  const isExternal: boolean = isLinkExternal(href);
+
   return (
     <Box>
       <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -36,6 +39,7 @@ function DesktopNavItem({
                   fontWeight={500}
                   color={"black"}
                   rounded={"md"}
+                  isExternal={isExternal}
                   border={isItemCurrent ? "1px" : undefined}
                   borderColor={isItemCurrent ? "black" : undefined}
                   _hover={{
