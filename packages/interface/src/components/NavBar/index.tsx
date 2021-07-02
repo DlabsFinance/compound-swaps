@@ -87,13 +87,13 @@ function NavBar(): JSX.Element {
                 <HStack spacing={4} alignItems={"center"}>
                   <Image
                     src="/logo.svg"
-                    alt="Fuse Logo"
+                    alt="Compound Logo"
                     width={48}
                     height={48}
                   />
                   <Box>
                     <Text as="b" fontSize={{ base: "14px", lg: "16px" }}>
-                      Fuse Margin Trading
+                      Compound Swaps
                     </Text>
                   </Box>
                 </HStack>

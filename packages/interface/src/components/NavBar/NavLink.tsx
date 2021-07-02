@@ -24,6 +24,7 @@ function NavLink({
   isRoute: boolean;
   isCurrent: boolean;
 }): JSX.Element {
+  const colorModeValue: string = useColorModeValue("gray.200", "gray.700");
   return isRoute ? (
     <NextLink href={url} passHref>
       <Link
@@ -35,7 +36,7 @@ function NavLink({
         _hover={{
           color: "black",
           textDecoration: "none",
-          bg: useColorModeValue("gray.200", "gray.700"),
+          bg: colorModeValue,
         }}
       >
         {link}
@@ -49,7 +50,7 @@ function NavLink({
       _hover={{
         color: "black",
         textDecoration: "none",
-        bg: useColorModeValue("gray.200", "gray.700"),
+        bg: colorModeValue,
       }}
       href={url}
       isExternal={external}
