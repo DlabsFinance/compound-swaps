@@ -1,11 +1,5 @@
 import { BigNumber } from "ethers";
-import { PoolKey } from "../../types";
-
-export interface Amounts {
-  amount: BigNumber;
-  amount0: BigNumber;
-  amount1: BigNumber;
-}
+import { PoolKey } from "../types";
 
 const feeDenominator: BigNumber = BigNumber.from("1000000");
 
@@ -14,7 +8,15 @@ export function calculateFee(amount: BigNumber, fee: BigNumber): BigNumber {
   return newAmount;
 }
 
-export function getAmounts(token: string, amount: BigNumber, poolKey: PoolKey): Amounts {
+export function getAmounts(
+  token: string,
+  amount: BigNumber,
+  poolKey: PoolKey,
+): {
+  amount: BigNumber;
+  amount0: BigNumber;
+  amount1: BigNumber;
+} {
   const fee: BigNumber = BigNumber.from(poolKey.fee);
   const newAmount: BigNumber = calculateFee(amount, fee);
   if (token === poolKey.token0) {

@@ -22,7 +22,8 @@ import {
   flashCallbackTestData,
 } from "../constants";
 import { migrate } from "../scripts/migrate";
-import { initialize, getCTokenAmount, getAmounts, Amounts } from "./shared";
+import { initialize } from "./shared";
+import { getCTokenAmount, getAmounts } from "../utils";
 
 describe("unit/CTokenSwap", () => {
   let accounts: Signer[];
@@ -223,7 +224,7 @@ describe("unit/CTokenSwap", () => {
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
-      const { amount, amount0, amount1 }: Amounts = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
+      const { amount, amount0, amount1 } = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
       await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
@@ -257,7 +258,7 @@ describe("unit/CTokenSwap", () => {
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cUSDC, usdcAmount);
-      const { amount, amount0, amount1 }: Amounts = getAmounts(USDC.address, usdcAmount, uniUSDCWETHPoolKey);
+      const { amount, amount0, amount1 } = getAmounts(USDC.address, usdcAmount, uniUSDCWETHPoolKey);
       await cUSDC.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
@@ -291,7 +292,7 @@ describe("unit/CTokenSwap", () => {
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cETH, ethAmount);
-      const { amount, amount0, amount1 }: Amounts = getAmounts(WETH.address, ethAmount, uniDAIWETHPoolKey);
+      const { amount, amount0, amount1 } = getAmounts(WETH.address, ethAmount, uniDAIWETHPoolKey);
       await cETH.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
@@ -325,7 +326,7 @@ describe("unit/CTokenSwap", () => {
       const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
-      const { amount, amount0, amount1 }: Amounts = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
+      const { amount, amount0, amount1 } = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
       await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
