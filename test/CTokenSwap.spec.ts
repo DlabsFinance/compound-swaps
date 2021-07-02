@@ -40,7 +40,7 @@ describe("unit/CTokenSwap", () => {
   let usdcAmount: BigNumber;
   let ethAmount: BigNumber;
 
-  before(async () => {
+  beforeEach(async () => {
     accounts = await ethers.getSigners();
     owner = <Wallet>accounts[0];
     impersonateAddressSigner = await ethers.provider.getSigner(impersonateAddress);
@@ -55,7 +55,7 @@ describe("unit/CTokenSwap", () => {
     ));
   });
 
-  after(async () => {
+  afterEach(async () => {
     await network.provider.request({
       method: "hardhat_stopImpersonatingAccount",
       params: [impersonateAddress],
