@@ -1,0 +1,75 @@
+import { ReactNode } from "react";
+import Head from "next/head";
+import { Box, Center, Divider } from "@chakra-ui/react";
+import NavBar from "./NavBar";
+import Footer from "./Footer";
+import { siteURL } from "../constants";
+
+const siteTwitter: string = "@Shakestats";
+const siteImageAlt: string = "Shakestats Logo";
+const siteLogo: string = `${siteURL}logo.png`;
+
+function Layout({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <Box>
+      <Head>
+        <meta charSet="utf-8" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#9f00a7" />
+        <meta name="msapplication-TileColor" content="#9f00a7" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={siteLogo} />
+        <meta property="og:image:alt" content={siteImageAlt} />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content={siteTwitter} />
+        <meta name="twitter:creator" content={siteTwitter} />
+        <meta name="twitter:image" content={siteLogo} />
+        <meta name="twitter:image:alt" content={siteImageAlt} />
+      </Head>
+      <Box position="relative">
+        <Center bg={"purple.100"}>
+          <Box w={1000}>
+            <NavBar />
+          </Box>
+        </Center>
+      </Box>
+      <Box position="relative">
+        <Center>
+          <Box marginBottom={40} w={1000} minHeight="70vh" overflow="hidden">
+            {children}
+          </Box>
+          <Box position="absolute" bottom={0} width="100%">
+            <Center>
+              <Box w={1000}>
+                <Divider />
+                <Footer />
+              </Box>
+            </Center>
+          </Box>
+        </Center>
+      </Box>
+    </Box>
+  );
+}
+
+export default Layout;
