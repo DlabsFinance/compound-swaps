@@ -4,7 +4,8 @@
   "author": "Gautham Ganesh Elango <gautham.gg@gmail.com> (https://github.com/gg2001)",
   "scripts": {
     "clean": "yarn workspaces run clean",
-    "build": "yarn workspace @compound-swaps/contracts build",
+    "build": "yarn workspace @compound-swaps/contracts build && yarn workspace @compound-swaps/interface build",
+    "dev": "yarn workspace @compound-swaps/interface dev",
     "test": "yarn workspace @compound-swaps/contracts test",
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint"
