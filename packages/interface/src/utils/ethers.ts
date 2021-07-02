@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { networkAPI } from "../constants";
+import { ALCHEMY_API } from "../constants";
 
 export function getDefaultProvider(): ethers.providers.BaseProvider {
-  return ethers.getDefaultProvider(networkAPI);
+  return ethers.getDefaultProvider(ALCHEMY_API);
 }

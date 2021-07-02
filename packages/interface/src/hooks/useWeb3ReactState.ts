@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, useReducer } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
+import { INFURA_ID } from "../constants";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-const INFURA_ID: string = String(process.env.REACT_APP_INFURA_ID);
 const NETWORK_NAME: string = "mainnet";
 
 export interface Web3ReactData {

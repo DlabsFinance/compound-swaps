@@ -16,7 +16,7 @@ function WalletButton(): JSX.Element {
   } = useDisclosure();
   const { provider, address, loadWeb3Modal, logoutOfWeb3Modal }: Web3ReactData =
     useWeb3React();
-  const { name } = useLookupAddress(address);
+  const { name } = useLookupAddress(address, provider);
 
   return (
     <>
