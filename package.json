@@ -12,7 +12,6 @@
     "dev:interface": "yarn workspace @compound-swaps/interface dev",
     "test": "yarn workspaces run test",
     "test:contracts": "yarn workspace @compound-swaps/contracts test",
-    "test:interface": "yarn workspace @compound-swaps/interface test",
     "prettier": "yarn workspaces run prettier",
     "prettier:contracts": "yarn workspace @compound-swaps/contracts prettier",
     "prettier:interface": "yarn workspace @compound-swaps/interface prettier",
