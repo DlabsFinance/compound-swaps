@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { Wallet, Signer } from "ethers";
-import { CTokenSwap, CTokenSwap__factory } from "../typechain";
+import { CTokenSwap, CTokenSwap__factory } from "../types";
 import { uniswapV3FactoryAddress, wethAddress } from "../constants";
 
 export async function migrate(owner: Wallet): Promise<CTokenSwap> {

@@ -7,7 +7,7 @@ import {
   ComptrollerInterface,
   CEtherInterface,
   CTokenSwap,
-} from "../../typechain";
+} from "../../types";
 import { migrate } from "../../scripts/migrate";
 import {
   daiAddress,

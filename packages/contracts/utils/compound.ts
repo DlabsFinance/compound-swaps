@@ -1,5 +1,5 @@
 import { Signer, BigNumber } from "ethers";
-import { CTokenInterface } from "../typechain";
+import { CTokenInterface } from "../types";
 
 export async function getCTokenAmount(cToken: CTokenInterface, tokenAmount: BigNumber): Promise<BigNumber> {
   const exchangeRate: BigNumber = await cToken.exchangeRateStored();

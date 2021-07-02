@@ -36,7 +36,7 @@ const config: HardhatUserConfig = {
     timeout: 600000,
   },
   typechain: {
-    outDir: "typechain",
+    outDir: "types/typechain",
     target: "ethers-v5",
   },
 };

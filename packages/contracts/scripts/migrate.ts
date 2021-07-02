@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { Signer, Wallet } from "ethers";
-import { CTokenSwap } from "../typechain";
+import { CTokenSwap } from "../types";
 import { migrate as migrateCTokenSwap } from "./CTokenSwap";
 
 export interface Migration {
