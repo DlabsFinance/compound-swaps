@@ -1,5 +1,4 @@
 import { Stack } from "@chakra-ui/react";
-import Search from "./Search";
 import MobileNavItem from "./MobileNavItem";
 import { NavItem } from "./NavItemChildren";
 
@@ -20,7 +19,6 @@ function MobileNav({
           {...navItem}
         />
       ))}
-      <Search />
     </Stack>
   );
 }
