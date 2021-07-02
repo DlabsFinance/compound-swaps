@@ -1,6 +1,14 @@
 import { ethers } from "hardhat";
-import { Signer, BigNumber } from "ethers";
-import { ERC20, CTokenInterface, CErc20Interface, ComptrollerInterface, CEtherInterface } from "../../typechain";
+import { Wallet, BigNumber } from "ethers";
+import {
+  ERC20,
+  CTokenInterface,
+  CErc20Interface,
+  ComptrollerInterface,
+  CEtherInterface,
+  CTokenSwap,
+} from "../../typechain";
+import { migrate } from "../../scripts/migrate";
 import {
   daiAddress,
   usdcAddress,
@@ -14,7 +22,8 @@ import {
   wethAddress,
 } from "../../constants";
 
-export interface Initialize {
+export interface CTokenSwapSubject {
+  cTokenSwap: CTokenSwap;
   DAI: ERC20;
   USDC: ERC20;
   WETH: ERC20;
@@ -29,7 +38,11 @@ export interface Initialize {
   ethAmount: BigNumber;
 }
 
-export async function initialize(impersonateAddress: string, impersonateAddressSigner: Signer): Promise<Initialize> {
+export async function cTokenSwapFixture(wallet: Wallet[]): Promise<CTokenSwapSubject> {
+  const owner: Wallet = wallet[0];
+  const impersonateAddressWallet: Wallet = wallet[1];
+  // const ownerAddress: string = await owner.getAddress();
+  const impersonateAddress: string = await impersonateAddressWallet.getAddress();
   const DAI: ERC20 = (await ethers.getContractAt(
     "@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20",
     daiAddress,
@@ -72,11 +85,11 @@ export async function initialize(impersonateAddress: string, impersonateAddressS
   )) as ComptrollerInterface;
 
   const cDAIBalance: BigNumber = await cDAI.balanceOf(impersonateAddress);
-  if (cDAIBalance.gt(BigNumber.from("0"))) await cDAIToken.connect(impersonateAddressSigner).redeem(cDAIBalance);
+  if (cDAIBalance.gt(BigNumber.from("0"))) await cDAIToken.connect(impersonateAddressWallet).redeem(cDAIBalance);
   const cUSDCBalance: BigNumber = await cUSDC.balanceOf(impersonateAddress);
-  if (cUSDCBalance.gt(BigNumber.from("0"))) await cUSDCToken.connect(impersonateAddressSigner).redeem(cUSDCBalance);
+  if (cUSDCBalance.gt(BigNumber.from("0"))) await cUSDCToken.connect(impersonateAddressWallet).redeem(cUSDCBalance);
   const cETHBalance: BigNumber = await cETH.balanceOf(impersonateAddress);
-  if (cETHBalance.gt(BigNumber.from("0"))) await cETHToken.connect(impersonateAddressSigner).redeem(cETHBalance);
+  if (cETHBalance.gt(BigNumber.from("0"))) await cETHToken.connect(impersonateAddressWallet).redeem(cETHBalance);
 
   const daiDecimals: number = await DAI.decimals();
   const usdcDecimals: number = await USDC.decimals();
@@ -84,13 +97,16 @@ export async function initialize(impersonateAddress: string, impersonateAddressS
   const daiAmount: BigNumber = ethers.utils.parseUnits(daiMintAmount, daiDecimals);
   const usdcAmount: BigNumber = ethers.utils.parseUnits(usdcMintAmount, usdcDecimals);
   const ethAmount: BigNumber = ethers.utils.parseEther(ethMintAmount);
-  await DAI.connect(impersonateAddressSigner).approve(cDAIToken.address, daiAmount.mul(2));
-  await cDAIToken.connect(impersonateAddressSigner).mint(daiAmount.mul(2));
-  await USDC.connect(impersonateAddressSigner).approve(cUSDCToken.address, usdcAmount.mul(2));
-  await cUSDCToken.connect(impersonateAddressSigner).mint(usdcAmount.mul(2));
-  await cETHToken.connect(impersonateAddressSigner).mint({ value: ethAmount.mul(2) });
+  await DAI.connect(impersonateAddressWallet).approve(cDAIToken.address, daiAmount.mul(2));
+  await cDAIToken.connect(impersonateAddressWallet).mint(daiAmount.mul(2));
+  await USDC.connect(impersonateAddressWallet).approve(cUSDCToken.address, usdcAmount.mul(2));
+  await cUSDCToken.connect(impersonateAddressWallet).mint(usdcAmount.mul(2));
+  await cETHToken.connect(impersonateAddressWallet).mint({ value: ethAmount.mul(2) });
+
+  const { cTokenSwap } = await migrate(owner);
 
   return {
+    cTokenSwap,
     DAI,
     USDC,
     WETH,

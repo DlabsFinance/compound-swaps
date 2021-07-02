@@ -1,7 +1,6 @@
-import { ethers, network } from "hardhat";
+import { ethers, network, waffle } from "hardhat";
 import { BigNumber, Signer, Wallet } from "ethers";
 import { expect } from "chai";
-import { CTokenSwap, ERC20, CTokenInterface } from "../typechain";
 import {
   impersonateAddress,
   uniswapV3FactoryAddress,
@@ -21,42 +20,30 @@ import {
   daiWETHTradeFlash,
   flashCallbackTestData,
 } from "../constants";
-import { migrate } from "../scripts/migrate";
-import { initialize } from "./shared";
+import { cTokenSwapFixture } from "./shared";
 import { getCTokenAmount, getAmounts } from "../utils";
+
+const { createFixtureLoader } = waffle;
+let loadFixture: ReturnType<typeof createFixtureLoader>;
 
 describe("unit/CTokenSwap", () => {
   let accounts: Signer[];
   let owner: Wallet;
-  let cTokenSwap: CTokenSwap;
-  let impersonateAddressSigner: Signer;
-  let DAI: ERC20;
-  let USDC: ERC20;
-  let WETH: ERC20;
-  let cDAI: CTokenInterface;
-  let cUSDC: CTokenInterface;
-  let cETH: CTokenInterface;
-  let daiDecimals: number;
-  let daiAmount: BigNumber;
-  let usdcAmount: BigNumber;
-  let ethAmount: BigNumber;
+  let impersonateAddressWallet: Wallet;
 
-  beforeEach(async () => {
+  before(async () => {
     accounts = await ethers.getSigners();
     owner = <Wallet>accounts[0];
-    impersonateAddressSigner = await ethers.provider.getSigner(impersonateAddress);
+    const impersonateAddressSigner: Signer = await ethers.provider.getSigner(impersonateAddress);
+    impersonateAddressWallet = <Wallet>impersonateAddressSigner;
+    loadFixture = createFixtureLoader([owner, impersonateAddressWallet], waffle.provider);
     await network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [impersonateAddress],
     });
-    ({ cTokenSwap } = await migrate(owner));
-    ({ DAI, USDC, WETH, cDAI, cUSDC, cETH, daiDecimals, daiAmount, usdcAmount, ethAmount } = await initialize(
-      impersonateAddress,
-      impersonateAddressSigner,
-    ));
   });
 
-  afterEach(async () => {
+  after(async () => {
     await network.provider.request({
       method: "hardhat_stopImpersonatingAccount",
       params: [impersonateAddress],
@@ -65,16 +52,19 @@ describe("unit/CTokenSwap", () => {
 
   describe("constructor", async () => {
     it("should set uniswapV3Factory", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
       const getUniswapV3Factory: string = await cTokenSwap.uniswapV3Factory();
       expect(getUniswapV3Factory).to.equal(uniswapV3FactoryAddress);
     });
 
     it("should set weth", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
       const getWeth: string = await cTokenSwap.weth();
       expect(getWeth).to.equal(wethAddress);
     });
 
     it("should set owner", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
       const getOwner: string = await cTokenSwap.owner();
       expect(getOwner).to.equal(owner.address);
     });
@@ -82,13 +72,15 @@ describe("unit/CTokenSwap", () => {
 
   describe("collateralSwap", async () => {
     it("swap cDAI to cUSDC", async () => {
+      const { cTokenSwap, DAI, USDC, cDAI, cUSDC, daiAmount } = await loadFixture(cTokenSwapFixture);
+
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
-      await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cDAI.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
-        cTokenSwap.connect(impersonateAddressSigner).collateralSwap(
+        cTokenSwap.connect(impersonateAddressWallet).collateralSwap(
           {
             token0Amount: daiAmount,
             cToken0Amount: cToken0Amount,
@@ -116,13 +108,15 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cUSDC to cDAI", async () => {
+      const { cTokenSwap, DAI, USDC, cDAI, cUSDC, usdcAmount } = await loadFixture(cTokenSwapFixture);
+
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cUSDC, usdcAmount);
-      await cUSDC.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cUSDC.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
-        cTokenSwap.connect(impersonateAddressSigner).collateralSwap(
+        cTokenSwap.connect(impersonateAddressWallet).collateralSwap(
           {
             token0Amount: usdcAmount,
             cToken0Amount: cToken0Amount,
@@ -150,13 +144,15 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cETH to cDAI", async () => {
+      const { cTokenSwap, DAI, cETH, cDAI, ethAmount } = await loadFixture(cTokenSwapFixture);
+
       const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cETH, ethAmount);
-      await cETH.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cETH.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
-        cTokenSwap.connect(impersonateAddressSigner).collateralSwap(
+        cTokenSwap.connect(impersonateAddressWallet).collateralSwap(
           {
             token0Amount: ethAmount,
             cToken0Amount: cToken0Amount,
@@ -184,13 +180,15 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cDAI to cETH", async () => {
+      const { cTokenSwap, DAI, cETH, cDAI, daiAmount } = await loadFixture(cTokenSwapFixture);
+
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
       const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
-      await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cDAI.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
-        cTokenSwap.connect(impersonateAddressSigner).collateralSwap(
+        cTokenSwap.connect(impersonateAddressWallet).collateralSwap(
           {
             token0Amount: daiAmount,
             cToken0Amount: cToken0Amount,
@@ -220,15 +218,17 @@ describe("unit/CTokenSwap", () => {
 
   describe("collateralSwapFlash", async () => {
     it("swap cDAI to cUSDC", async () => {
+      const { cTokenSwap, DAI, USDC, cDAI, cUSDC, daiAmount } = await loadFixture(cTokenSwapFixture);
+
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
       const { amount, amount0, amount1 } = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
-      await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cDAI.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
-          .connect(impersonateAddressSigner)
+          .connect(impersonateAddressWallet)
           .collateralSwapFlash(amount0, amount1, uniDAIWETHPool, uniDAIWETHPoolKey, {
             token0Amount: amount,
             cToken0Amount: cToken0Amount,
@@ -254,15 +254,16 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cUSDC to cDAI", async () => {
+      const { cTokenSwap, DAI, USDC, cDAI, cUSDC, usdcAmount } = await loadFixture(cTokenSwapFixture);
       const cUSDCBalanceImpersonate0: BigNumber = await cUSDC.balanceOf(impersonateAddress);
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cUSDC, usdcAmount);
       const { amount, amount0, amount1 } = getAmounts(USDC.address, usdcAmount, uniUSDCWETHPoolKey);
-      await cUSDC.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cUSDC.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
-          .connect(impersonateAddressSigner)
+          .connect(impersonateAddressWallet)
           .collateralSwapFlash(amount0, amount1, uniUSDCWETHPool, uniUSDCWETHPoolKey, {
             token0Amount: amount,
             cToken0Amount: cToken0Amount,
@@ -288,15 +289,17 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cETH to cDAI", async () => {
+      const { cTokenSwap, WETH, DAI, cETH, cDAI, ethAmount } = await loadFixture(cTokenSwapFixture);
+
       const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cETH, ethAmount);
       const { amount, amount0, amount1 } = getAmounts(WETH.address, ethAmount, uniDAIWETHPoolKey);
-      await cETH.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cETH.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
-          .connect(impersonateAddressSigner)
+          .connect(impersonateAddressWallet)
           .collateralSwapFlash(amount0, amount1, uniDAIWETHPool, uniDAIWETHPoolKey, {
             token0Amount: amount,
             cToken0Amount: cToken0Amount,
@@ -322,15 +325,17 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("swap cDAI to cETH", async () => {
+      const { cTokenSwap, DAI, cETH, cDAI, daiAmount } = await loadFixture(cTokenSwapFixture);
+
       const cDAIBalanceImpersonate0: BigNumber = await cDAI.balanceOf(impersonateAddress);
       const cETHBalanceImpersonate0: BigNumber = await cETH.balanceOf(impersonateAddress);
 
       const cToken0Amount: BigNumber = await getCTokenAmount(cDAI, daiAmount);
       const { amount, amount0, amount1 } = getAmounts(DAI.address, daiAmount, uniDAIWETHPoolKey);
-      await cDAI.connect(impersonateAddressSigner).approve(cTokenSwap.address, cToken0Amount);
+      await cDAI.connect(impersonateAddressWallet).approve(cTokenSwap.address, cToken0Amount);
       await expect(
         cTokenSwap
-          .connect(impersonateAddressSigner)
+          .connect(impersonateAddressWallet)
           .collateralSwapFlash(amount0, amount1, uniDAIWETHPool, uniDAIWETHPoolKey, {
             token0Amount: amount,
             cToken0Amount: cToken0Amount,
@@ -358,9 +363,11 @@ describe("unit/CTokenSwap", () => {
 
   describe("uniswapV3FlashCallback", async () => {
     it("should revert if not uniswap pair", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
+
       await expect(
         cTokenSwap
-          .connect(impersonateAddressSigner)
+          .connect(impersonateAddressWallet)
           .uniswapV3FlashCallback(BigNumber.from("0"), BigNumber.from("0"), flashCallbackTestData),
       ).to.be.revertedWith("Transaction reverted without a reason string");
     });
@@ -368,14 +375,18 @@ describe("unit/CTokenSwap", () => {
 
   describe("transferToken", async () => {
     it("should revert if not owner", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
+
       await expect(
-        cTokenSwap.connect(impersonateAddressSigner).transferToken(ethers.constants.AddressZero),
+        cTokenSwap.connect(impersonateAddressWallet).transferToken(ethers.constants.AddressZero),
       ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
     it("should transfer token", async () => {
+      const { cTokenSwap, DAI, daiDecimals } = await loadFixture(cTokenSwapFixture);
+
       const daiTransferAmount: BigNumber = ethers.utils.parseUnits("100", daiDecimals);
-      await DAI.connect(impersonateAddressSigner).transfer(cTokenSwap.address, daiTransferAmount);
+      await DAI.connect(impersonateAddressWallet).transfer(cTokenSwap.address, daiTransferAmount);
 
       const daiBalanceCTokenSwap0: BigNumber = await DAI.balanceOf(cTokenSwap.address);
       expect(daiBalanceCTokenSwap0).to.equal(daiTransferAmount);
@@ -390,8 +401,10 @@ describe("unit/CTokenSwap", () => {
     });
 
     it("should transfer ether", async () => {
+      const { cTokenSwap } = await loadFixture(cTokenSwapFixture);
+
       const ethTransferAmount: BigNumber = ethers.utils.parseEther("1");
-      await impersonateAddressSigner.sendTransaction({ value: ethTransferAmount, to: cTokenSwap.address });
+      await impersonateAddressWallet.sendTransaction({ value: ethTransferAmount, to: cTokenSwap.address });
 
       const ethBalanceCTokenSwap0: BigNumber = await ethers.provider.getBalance(cTokenSwap.address);
       expect(ethBalanceCTokenSwap0).to.equal(ethTransferAmount);
