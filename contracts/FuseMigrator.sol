@@ -17,12 +17,14 @@ contract FuseMigrator is IFuseMigrator, Ownable {
 
     /// @notice Migrates a cToken of the same underlying asset to another
     /// @dev This may put the sender at liquidation risk if they have debt
+    /// @param recipient Address receiving the new cTokens
     /// @param cToken0 cToken to migrate from
     /// @param cToken1 cToken to migrate to
     /// @param token Underlying token
     /// @param cToken0Amount Amount of cToken0 to migrate
     /// @return Amount of cToken1 minted and received
     function migrate(
+        address recipient,
         address cToken0,
         address cToken1,
         address token,
@@ -50,10 +52,10 @@ contract FuseMigrator is IFuseMigrator, Ownable {
         }
         // Amount of cToken1 minted
         uint256 cToken1Balance = CTokenInterface(cToken1).balanceOf(address(this));
-        // Transfer cToken1Balance of cToken1 to msg.sender
-        require(CTokenInterface(cToken1).transfer(msg.sender, cToken1Balance), "FuseMigrator: Transfer failed");
+        // Transfer cToken1Balance of cToken1 to recipient
+        require(CTokenInterface(cToken1).transfer(recipient, cToken1Balance), "FuseMigrator: Transfer failed");
         // Emit event
-        emit Migrate(cToken0, cToken1, cToken0Amount);
+        emit Migrate(msg.sender, recipient, cToken0, cToken1, cToken0Amount);
         // Return migrated cToken1 amount
         return cToken1Balance;
     }
