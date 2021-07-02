@@ -1,46 +1,55 @@
 import { useCallback } from "react";
-import { useRouter } from "next/router";
-import NextLink from "next/link";
-import Image from "next/image";
 import {
   Box,
   Flex,
-  IconButton,
-  Stack,
-  Collapse,
-  Link,
-  useDisclosure,
   HStack,
+  IconButton,
+  useDisclosure,
+  Stack,
+  Link,
   Text,
+  Button,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import DesktopNav from "./DesktopNav";
-import MobileNav from "./MobileNav";
-import { NavItem } from "./NavItemChildren";
-import Search from "./Search";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import NextLink from "next/link";
+import NavLink from "./NavLink";
+//import WalletButton from "./WalletButton";
 
-const NAV_ITEMS: Array<NavItem> = [
+const Links: {
+  link: string;
+  url: string;
+  external: boolean;
+  isRoute: boolean;
+}[] = [
+  { link: "Swap", url: "/", external: false, isRoute: true },
+  { link: "Swap & Repay", url: "/repay", external: false, isRoute: true },
   {
-    label: "Swap",
-    href: "/",
+    link: "Docs ↗",
+    url: "https://github.com/gg2001/compound-swaps",
+    external: true,
+    isRoute: false,
   },
   {
-    label: "Swap & Repay",
-    href: "/repay",
-  },
-  {
-    label: "Docs ↗",
-    href: "https://github.com/gg2001/compound-swaps",
-  },
-  {
-    label: "Compound ↗",
-    href: "https://app.compound.finance/",
+    link: "Compound ↗",
+    url: "https://app.compound.finance/",
+    external: true,
+    isRoute: false,
   },
 ];
 
 function NavBar(): JSX.Element {
-  const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
+  const {
+    isOpen,
+    onOpen,
+    onClose,
+  }: {
+    isOpen: boolean;
+    onOpen: () => void;
+    onClose: () => void;
+  } = useDisclosure();
 
   const pathname: string = router.pathname;
 
@@ -51,69 +60,84 @@ function NavBar(): JSX.Element {
   );
 
   return (
-    <Box>
-      <Flex
-        color={"gray.600"}
-        minH={"60px"}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
+    <>
+      <Box
+        px={4}
         borderBottom={1}
         borderStyle={"solid"}
         borderColor={"gray.200"}
-        align={"center"}
       >
-        <Flex
-          flex={{ base: 1, md: "auto" }}
-          ml={{ base: -2 }}
-          display={{ base: "flex", md: "none" }}
-        >
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
-            onClick={onToggle}
+            size={"md"}
             icon={
-              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+              isOpen ? (
+                <CloseIcon color="black" />
+              ) : (
+                <HamburgerIcon color="black" />
+              )
             }
-            variant={"ghost"}
-            aria-label={"Toggle Navigation"}
+            aria-label={"Open Menu"}
+            display={{ md: !isOpen ? "none" : "inherit" }}
+            onClick={isOpen ? onClose : onOpen}
           />
-        </Flex>
-        <Flex
-          flex={{ base: 1 }}
-          justify={{ base: "center", md: "start" }}
-        >
-          <NextLink href="/">
-            <Link>
-              <HStack spacing={4} alignItems={"center"}>
-                <Image
-                  src="/logo.svg"
-                  alt="Compound Logo"
-                  width={48}
-                  height={48}
+          <HStack spacing={8} alignItems={"center"}>
+            <NextLink href={"/"} passHref>
+              <Link marginLeft={{ base: "1", md: "0" }}>
+                <HStack spacing={4} alignItems={"center"}>
+                  <Image
+                    src="/logo.svg"
+                    alt="Fuse Logo"
+                    width={48}
+                    height={48}
+                  />
+                  <Box>
+                    <Text as="b" fontSize={{ base: "14px", lg: "16px" }}>
+                      Fuse Margin Trading
+                    </Text>
+                  </Box>
+                </HStack>
+              </Link>
+            </NextLink>
+            <HStack
+              as={"nav"}
+              spacing={4}
+              display={{ base: "none", md: "flex" }}
+            >
+              {Links.map((link) => (
+                <NavLink
+                  key={link.link}
+                  link={link.link}
+                  url={link.url}
+                  external={link.external}
+                  isRoute={link.isRoute}
+                  isCurrent={isCurrent(link.url)}
                 />
-                <Box>
-                  <Text as="b" fontSize={{ base: "14px", lg: "16px" }}>
-                    Fuse Margin Trading
-                  </Text>
-                </Box>
-              </HStack>
-            </Link>
-          </NextLink>
-          <Flex display={{ base: "none", md: "flex" }} ml={5} pt={2.5}>
-            <DesktopNav navItems={NAV_ITEMS} isCurrent={isCurrent} />
+              ))}
+            </HStack>
+          </HStack>
+          <Flex alignItems={"center"}>
+            <Button>hi</Button>
           </Flex>
         </Flex>
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={"flex-end"}
-          direction={"row"}
-          spacing={6}
-        >
-          <Search display={{ md: "flex" }} />
-        </Stack>
-      </Flex>
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav navItems={NAV_ITEMS} isCurrent={isCurrent} />
-      </Collapse>
-    </Box>
+        {isOpen ? (
+          <Box pb={4}>
+            <Stack as={"nav"} spacing={4}>
+              {Links.map((link) => (
+                <NavLink
+                  key={link.link}
+                  link={link.link}
+                  url={link.url}
+                  external={link.external}
+                  isRoute={link.isRoute}
+                  isCurrent={isCurrent(link.url)}
+                />
+              ))}
+            </Stack>
+          </Box>
+        ) : null}
+      </Box>
+    </>
   );
 }
 
