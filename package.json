@@ -5,12 +5,10 @@
   "scripts": {
     "clean": "yarn workspaces run clean",
     "clean:contracts": "yarn workspace @compound-swaps/contracts clean",
-    "clean:interface": "yarn workspace @compound-swaps/interface clean",
-    "build": "yarn workspaces run build",
+    "build": "yarn run build:contracts && yarn build:interface",
     "build:contracts": "yarn workspace @compound-swaps/contracts build",
     "build:interface": "yarn workspace @compound-swaps/interface build",
     "dev": "yarn workspaces run dev",
-    "dev:contracts": "yarn workspace @compound-swaps/contracts dev",
     "dev:interface": "yarn workspace @compound-swaps/interface dev",
     "test": "yarn workspaces run test",
     "test:contracts": "yarn workspace @compound-swaps/contracts test",
