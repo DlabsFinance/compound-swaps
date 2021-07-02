@@ -24,12 +24,6 @@ jobs:
         run: |
           # disable command workflow processing
           echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
-          # log untrusted output
-          touch .env
-          echo ALCHEMY_API_KEY =${{ secrets.ALCHEMY_API_KEY }} >> .env
-          echo COINMARKETCAP =${{ secrets.COINMARKETCAP }} >> .env
-          echo ETHERSCAN =${{ secrets.ETHERSCAN }} >> .env
-          echo PRIVATE_KEY =${{ secrets.PRIVATE_KEY }} >> .env
           # enable workflow command processing
           echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
       - uses: borales/actions-yarn@v2.0.2
