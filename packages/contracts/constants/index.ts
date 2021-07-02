@@ -1,10 +1,4 @@
-import { BigNumberish } from "ethers";
-
-export interface PoolKey {
-  token0: string;
-  token1: string;
-  fee: BigNumberish;
-}
+import { PoolKey } from "../types";
 
 export const uniswapV3FactoryAddress: string = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 export const impersonateAddress: string = "0x0F4ee9631f4be0a63756515141281A3E2B293Bbe";

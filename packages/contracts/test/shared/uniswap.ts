@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { PoolKey } from "../../constants";
+import { PoolKey } from "../../types";
 
 export interface Amounts {
   amount: BigNumber;
