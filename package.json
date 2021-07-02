@@ -3,7 +3,7 @@
   "name": "compound-swaps",
   "author": "Gautham Ganesh Elango <gautham.gg@gmail.com> (https://github.com/gg2001)",
   "scripts": {
-    "clean": "yarn workspaces run clean",
+    "clean": "yarn workspace @compound-swaps/contracts clean",
     "build": "yarn workspace @compound-swaps/contracts build && yarn workspace @compound-swaps/interface build",
     "dev": "yarn workspace @compound-swaps/interface dev",
     "test": "yarn workspace @compound-swaps/contracts test",
