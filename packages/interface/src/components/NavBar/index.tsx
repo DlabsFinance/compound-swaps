@@ -8,14 +8,13 @@ import {
   Stack,
   Link,
   Text,
-  Button,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import NextLink from "next/link";
 import NavLink from "./NavLink";
-//import WalletButton from "./WalletButton";
+import WalletButton from "./WalletButton";
 
 const Links: {
   link: string;
@@ -117,7 +116,7 @@ function NavBar(): JSX.Element {
             </HStack>
           </HStack>
           <Flex alignItems={"center"}>
-            <Button>hi</Button>
+            <WalletButton />
           </Flex>
         </Flex>
         {isOpen ? (
