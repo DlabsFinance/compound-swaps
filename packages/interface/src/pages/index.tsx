@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Center, Spinner } from "@chakra-ui/react";
+import { Box, Center, Spinner } from "@chakra-ui/react";
 import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
@@ -26,18 +26,20 @@ function Home(): JSX.Element {
         <meta name="twitter:url" content={pageURL} />
         <meta name="twitter:description" content={pageDescription} />
       </Head>
-      <Header props={{ marginTop: 2 }}>
-        Swap your{" "}
-        <ExternalLink href={"https://compound.finance/"} text={"Compound"} />{" "}
-        collateral
-      </Header>
-      {compoundState.loaded ? (
-        <Balances compoundState={compoundState} balancesLoaded={true} />
-      ) : (
-        <Center marginTop={2}>
-          <Spinner size={"lg"} />
-        </Center>
-      )}
+      <Box p={2}>
+        <Header>
+          Swap your{" "}
+          <ExternalLink href={"https://compound.finance/"} text={"Compound"} />{" "}
+          collateral
+        </Header>
+        {compoundState.loaded ? (
+          <Balances compoundState={compoundState} balancesLoaded={true} />
+        ) : (
+          <Center marginTop={2}>
+            <Spinner size={"lg"} />
+          </Center>
+        )}
+      </Box>
     </Layout>
   );
 }
