@@ -47,7 +47,7 @@ function Layout({ children }: { children: ReactNode }): JSX.Element {
         <meta name="twitter:image:alt" content={siteImageAlt} />
       </Head>
       <Center>
-        <Box w={1000} position="relative" minHeight="100vh">
+        <Box w={1000} position="relative" minHeight="100vh" overflow="hidden">
           <Box marginBottom={40}>
             <NavBar />
             {children}
