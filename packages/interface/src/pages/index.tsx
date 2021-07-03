@@ -4,7 +4,7 @@ import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import useWeb3React from "../hooks/useWeb3React";
-import { getCompoundAllMarkets, getCompoundMarkets } from "../utils";
+import { getCompoundAllMarkets, getCompoundMarkets, getTokens } from "../utils";
 
 const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
 const pageDescription: string =
@@ -29,6 +29,7 @@ function Home(): JSX.Element {
         );
         console.log(markets);
         console.log(underlying);
+        await getTokens(provider, chainId, underlying);
       }
     };
     fetchData();

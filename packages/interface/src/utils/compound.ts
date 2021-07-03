@@ -28,7 +28,12 @@ export async function getCompoundMarkets(
   provider: ethers.providers.Provider,
   chainId: number,
   allMarkets: string[]
-): Promise<{ markets: Market[]; underlying: string[] }> {
+): Promise<{
+  markets: Market[];
+  underlying: string[];
+  borrowRatePerBlock: BigNumber[];
+  supplyRatePerBlock: BigNumber[];
+}> {
   const comptrollerAddress: string = addresses[chainId].comptroller;
   const multicall: Multicall = Multicall__factory.connect(
     addresses[chainId].multicall,
@@ -47,18 +52,39 @@ export async function getCompoundMarkets(
     callData:
       CToken__factory.createInterface().encodeFunctionData("underlying"),
   }));
+  const borrowRatePerBlockCalls: Call[] = allMarkets.map((market: string) => ({
+    target: market,
+    callData:
+      CToken__factory.createInterface().encodeFunctionData(
+        "borrowRatePerBlock"
+      ),
+  }));
+  const supplyRatePerBlockCalls: Call[] = allMarkets.map((market: string) => ({
+    target: market,
+    callData:
+      CToken__factory.createInterface().encodeFunctionData(
+        "supplyRatePerBlock"
+      ),
+  }));
 
-  const [marketsReturnData, underlyingReturnData]: [string[], string[]] = (
+  const [
+    marketsReturnData,
+    underlyingReturnData,
+    borrowRatePerBlockReturnData,
+    supplyRatePerBlockReturnData,
+  ]: [string[], string[], string[], string[]] = (
     await Promise.all([
       multicall.callStatic.aggregate(marketsCalls),
       multicall.callStatic.aggregate(underlyingCalls),
+      multicall.callStatic.aggregate(borrowRatePerBlockCalls),
+      multicall.callStatic.aggregate(supplyRatePerBlockCalls),
     ])
   ).map(
     (aggregateReturn: {
       blockNumber: ethers.BigNumber;
       returnData: string[];
     }) => aggregateReturn.returnData
-  ) as [string[], string[]];
+  ) as [string[], string[], string[], string[]];
 
   const markets: Market[] = marketsReturnData.map((returnData: string) => {
     const decoded = Comptroller__factory.createInterface().decodeFunctionResult(
@@ -84,6 +110,24 @@ export async function getCompoundMarkets(
       }
     }
   );
+  const borrowRatePerBlock: BigNumber[] = borrowRatePerBlockReturnData.map(
+    (returnData: string) => {
+      const decoded = CToken__factory.createInterface().decodeFunctionResult(
+        "borrowRatePerBlock",
+        returnData
+      );
+      return decoded[0] as BigNumber;
+    }
+  );
+  const supplyRatePerBlock: BigNumber[] = supplyRatePerBlockReturnData.map(
+    (returnData: string) => {
+      const decoded = CToken__factory.createInterface().decodeFunctionResult(
+        "supplyRatePerBlock",
+        returnData
+      );
+      return decoded[0] as BigNumber;
+    }
+  );
 
-  return { markets, underlying };
+  return { markets, underlying, borrowRatePerBlock, supplyRatePerBlock };
 }
