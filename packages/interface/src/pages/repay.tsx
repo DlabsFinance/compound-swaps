@@ -5,6 +5,7 @@ import Layout from "../components/layout";
 import { siteURL } from "../constants";
 import Balances from "../components/Balances";
 import useCompound from "../hooks/useCompound";
+import useBalances from "../hooks/useBalances";
 
 const pageTitle: string =
   "Compound Swaps - Repay debt with collateral on Compound";
@@ -14,6 +15,7 @@ const pageURL: string = siteURL;
 
 function Repay(): JSX.Element {
   const compoundState = useCompound();
+  const balancesState = useBalances();
 
   return (
     <Layout>
@@ -33,7 +35,10 @@ function Repay(): JSX.Element {
           <ExternalLink href={"https://compound.finance/"} text={"Compound"} />
         </Header>
         {compoundState.loaded ? (
-          <Balances compoundState={compoundState} balancesLoaded={true} />
+          <Balances
+            compoundState={compoundState}
+            balancesState={balancesState}
+          />
         ) : (
           <Center marginTop={2}>
             <Spinner size={"lg"} />
