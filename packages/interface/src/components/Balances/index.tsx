@@ -16,8 +16,10 @@ function Balances({
           <Thead>
             <Tr>
               <Th>Token</Th>
-              <Th isNumeric>Supply Balance (Supply APY)</Th>
-              <Th isNumeric>Borrow Balance (Borrow APY)</Th>
+              <Th isNumeric>Supply Balance</Th>
+              <Th isNumeric>Supply APY</Th>
+              <Th isNumeric>Borrow Balance</Th>
+              <Th isNumeric>Borrow APY</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -25,21 +27,21 @@ function Balances({
               (allMarkets: string, index: number) => (
                 <Tr key={allMarkets}>
                   <Td>{compoundState.symbol[index]}</Td>
+                  <Td isNumeric>{balancesLoaded ? "0" : "..."}</Td>
                   <Td isNumeric>
-                    {balancesLoaded
-                      ? `0 (${formatAmount(
-                          calculateApy(compoundState.supplyRatePerBlock[index]),
-                          2
-                        )}%)`
-                      : "..."}
+                    {`${formatAmount(
+                      calculateApy(compoundState.supplyRatePerBlock[index]),
+                      2
+                    )}
+                    %`}
                   </Td>
+                  <Td isNumeric>{balancesLoaded ? "0" : "..."}</Td>
                   <Td isNumeric>
-                    {balancesLoaded
-                      ? `0 (${formatAmount(
-                          calculateApy(compoundState.borrowRatePerBlock[index]),
-                          2
-                        )}%)`
-                      : "..."}
+                    {`${formatAmount(
+                      calculateApy(compoundState.borrowRatePerBlock[index]),
+                      2
+                    )}
+                    %`}
                   </Td>
                 </Tr>
               )
