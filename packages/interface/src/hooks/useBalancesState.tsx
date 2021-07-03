@@ -6,7 +6,7 @@ import { getBalances } from "../utils";
 export interface State {
   loaded: boolean;
   error: boolean;
-  getAssetsIn: string[];
+  assetsIn: boolean[];
   balanceOfUnderlying: BigNumber[];
   borrowBalanceCurrent: BigNumber[];
   balanceOf: BigNumber[];
@@ -30,7 +30,7 @@ type Action =
 export const initialState: State = {
   loaded: false,
   error: false,
-  getAssetsIn: [],
+  assetsIn: [],
   balanceOfUnderlying: [],
   borrowBalanceCurrent: [],
   balanceOf: [],
@@ -41,6 +41,7 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case ActionType.FETCHED_PROVIDER: {
       const {
+        assetsIn,
         balanceOfUnderlying,
         borrowBalanceCurrent,
         balanceOf,
@@ -50,6 +51,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         loaded: true,
         error: false,
+        assetsIn,
         balanceOfUnderlying,
         borrowBalanceCurrent,
         balanceOf,

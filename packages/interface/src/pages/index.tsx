@@ -5,6 +5,7 @@ import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import Balances from "../components/Balances";
 import useCompound from "../hooks/useCompound";
+import useBalances from "../hooks/useBalances";
 
 const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
 const pageDescription: string =
@@ -13,6 +14,7 @@ const pageURL: string = siteURL;
 
 function Home(): JSX.Element {
   const compoundState = useCompound();
+  const balancesState = useBalances();
 
   return (
     <Layout>
@@ -33,7 +35,10 @@ function Home(): JSX.Element {
           collateral
         </Header>
         {compoundState.loaded ? (
-          <Balances compoundState={compoundState} balancesLoaded={true} />
+          <Balances
+            compoundState={compoundState}
+            balancesState={balancesState}
+          />
         ) : (
           <Center marginTop={2}>
             <Spinner size={"lg"} />

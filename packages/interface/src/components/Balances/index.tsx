@@ -1,23 +1,15 @@
-import {
-  Box,
-  Flex,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Switch,
-} from "@chakra-ui/react";
-import { State } from "../../hooks/useCompound";
+import { Box, Flex, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+import CollateralSwitch from "./CollateralSwitch";
+import { State as CompoundState } from "../../hooks/useCompound";
+import { State as BalancesState } from "../../hooks/useBalances";
 import { calculateApy, formatAmount } from "../../utils";
 
 function Balances({
   compoundState,
-  balancesLoaded,
+  balancesState,
 }: {
-  compoundState: State;
-  balancesLoaded: boolean;
+  compoundState: CompoundState;
+  balancesState: BalancesState;
 }): JSX.Element {
   return (
     <Flex justify="center" items="center">
@@ -39,16 +31,24 @@ function Balances({
                 <Tr key={allMarkets}>
                   <Td>{compoundState.symbol[index]}</Td>
                   <Td>
-                    <Switch isReadOnly />
+                    <CollateralSwitch
+                      market={allMarkets}
+                      balancesLoaded={balancesState.loaded}
+                      assetIn={
+                        balancesState.assetsIn[index] !== undefined
+                          ? balancesState.assetsIn[index]
+                          : false
+                      }
+                    />
                   </Td>
-                  <Td isNumeric>{balancesLoaded ? "0" : "..."}</Td>
+                  <Td isNumeric>{balancesState.loaded ? "0" : "..."}</Td>
                   <Td isNumeric>
                     {`${formatAmount(
                       calculateApy(compoundState.supplyRatePerBlock[index]),
                       2
                     )}%`}
                   </Td>
-                  <Td isNumeric>{balancesLoaded ? "0" : "..."}</Td>
+                  <Td isNumeric>{balancesState.loaded ? "0" : "..."}</Td>
                   <Td isNumeric>
                     {`${formatAmount(
                       calculateApy(compoundState.borrowRatePerBlock[index]),

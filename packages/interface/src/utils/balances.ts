@@ -15,7 +15,7 @@ export async function getBalances(
   address: string,
   allMarkets: string[]
 ): Promise<{
-  getAssetsIn: string[];
+  assetsIn: boolean[];
   balanceOfUnderlying: BigNumber[];
   borrowBalanceCurrent: BigNumber[];
   balanceOf: BigNumber[];
@@ -31,6 +31,13 @@ export async function getBalances(
   );
 
   const getAssetsIn: string[] = await comptroller.getAssetsIn(address);
+  const assetsIn: boolean[] = allMarkets.map((market: string) => {
+    if (getAssetsIn.includes(market)) {
+      return true;
+    } else {
+      return false;
+    }
+  });
 
   const balanceOfUnderlyingCalls: Call[] = allMarkets.map((market: string) => ({
     target: market,
@@ -120,7 +127,7 @@ export async function getBalances(
   );
 
   return {
-    getAssetsIn,
+    assetsIn,
     balanceOfUnderlying,
     borrowBalanceCurrent,
     balanceOf,
