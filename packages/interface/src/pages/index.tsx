@@ -2,6 +2,7 @@ import Head from "next/head";
 import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
+import Balances from "../components/Balances";
 import useCompound from "../hooks/useCompound";
 
 const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
@@ -11,7 +12,6 @@ const pageURL: string = siteURL;
 
 function Home(): JSX.Element {
   const compoundState = useCompound();
-  console.log(compoundState);
 
   return (
     <Layout>
@@ -30,6 +30,7 @@ function Home(): JSX.Element {
         <ExternalLink href={"https://compound.finance/"} text={"Compound"} />{" "}
         collateral
       </Header>
+      <Balances compoundState={compoundState} balancesLoaded={true} />
     </Layout>
   );
 }
