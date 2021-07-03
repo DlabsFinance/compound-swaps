@@ -22,10 +22,48 @@ export async function getCompoundAllMarkets(
     addresses[chainId].comptroller,
     provider
   );
+  const multicall: Multicall = Multicall__factory.connect(
+    addresses[chainId].multicall,
+    provider
+  );
 
   const getAllMarkets: string[] = await comptroller.getAllMarkets();
 
-  return getAllMarkets;
+  const mintGuardianPausedCalls: Call[] = getAllMarkets.map(
+    (market: string) => ({
+      target: comptroller.address,
+      callData: Comptroller__factory.createInterface().encodeFunctionData(
+        "mintGuardianPaused",
+        [market]
+      ),
+    })
+  );
+
+  const [mintGuardianPausedReturnData]: [string[]] = (
+    await Promise.all([multicall.callStatic.aggregate(mintGuardianPausedCalls)])
+  ).map(
+    (aggregateReturn: {
+      blockNumber: ethers.BigNumber;
+      returnData: string[];
+    }) => aggregateReturn.returnData
+  ) as [string[]];
+
+  const mintGuardianPaused: boolean[] = mintGuardianPausedReturnData.map(
+    (returnData: string) => {
+      const decoded =
+        Comptroller__factory.createInterface().decodeFunctionResult(
+          "mintGuardianPaused",
+          returnData
+        );
+      return decoded[0] as boolean;
+    }
+  );
+
+  const allMarkets: string[] = getAllMarkets.filter(
+    (value: string, index: number) => !mintGuardianPaused[index]
+  );
+
+  return allMarkets;
 }
 
 export async function getCompoundMarkets(
