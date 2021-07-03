@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { Center, Spinner } from "@chakra-ui/react";
 import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
@@ -30,7 +31,13 @@ function Home(): JSX.Element {
         <ExternalLink href={"https://compound.finance/"} text={"Compound"} />{" "}
         collateral
       </Header>
-      <Balances compoundState={compoundState} balancesLoaded={true} />
+      {compoundState.loaded ? (
+        <Balances compoundState={compoundState} balancesLoaded={true} />
+      ) : (
+        <Center marginTop={2}>
+          <Spinner size={"lg"} />
+        </Center>
+      )}
     </Layout>
   );
 }
