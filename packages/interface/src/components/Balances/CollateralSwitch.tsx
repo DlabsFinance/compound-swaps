@@ -1,6 +1,7 @@
 import { Switch } from "@chakra-ui/react";
 import { Signer } from "ethers";
 import useWeb3React from "../../hooks/useWeb3React";
+import useTransaction from "../../hooks/useTransaction";
 import { Comptroller__factory, Comptroller } from "../../types";
 import { addresses } from "../../constants";
 
@@ -14,18 +15,19 @@ function CollateralSwitch({
   market: string;
 }): JSX.Element {
   const { provider, chainId } = useWeb3React();
+  const { sendTransaction } = useTransaction();
 
   const onChange = async () => {
     if (balancesLoaded && provider !== undefined) {
-      const signer: Signer = await provider.getSigner();
+      const signer: Signer = await provider.getUncheckedSigner();
       const comptroller: Comptroller = Comptroller__factory.connect(
         addresses[chainId].comptroller,
         signer
       );
       if (assetIn) {
-        await comptroller.exitMarket(market);
+        await sendTransaction(comptroller.exitMarket(market));
       } else {
-        await comptroller.enterMarkets([market]);
+        await sendTransaction(comptroller.enterMarkets([market]));
       }
     }
   };
