@@ -6,6 +6,7 @@ import { getBalances } from "../utils";
 export interface State {
   loaded: boolean;
   error: boolean;
+  getAssetsIn: string[];
   balanceOfUnderlying: BigNumber[];
   borrowBalanceCurrent: BigNumber[];
   balanceOf: BigNumber[];
@@ -29,6 +30,7 @@ type Action =
 export const initialState: State = {
   loaded: false,
   error: false,
+  getAssetsIn: [],
   balanceOfUnderlying: [],
   borrowBalanceCurrent: [],
   balanceOf: [],

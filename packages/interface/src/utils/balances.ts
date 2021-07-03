@@ -1,5 +1,12 @@
 import { ethers, BigNumber } from "ethers";
-import { Call, Multicall__factory, Multicall, CToken__factory } from "../types";
+import {
+  Call,
+  Comptroller__factory,
+  Comptroller,
+  Multicall__factory,
+  Multicall,
+  CToken__factory,
+} from "../types";
 import { addresses } from "../constants";
 
 export async function getBalances(
@@ -8,15 +15,22 @@ export async function getBalances(
   address: string,
   allMarkets: string[]
 ): Promise<{
+  getAssetsIn: string[];
   balanceOfUnderlying: BigNumber[];
   borrowBalanceCurrent: BigNumber[];
   balanceOf: BigNumber[];
   cTokenSwapAllowance: BigNumber[];
 }> {
+  const comptroller: Comptroller = Comptroller__factory.connect(
+    addresses[chainId].comptroller,
+    provider
+  );
   const multicall: Multicall = Multicall__factory.connect(
     addresses[chainId].multicall,
     provider
   );
+
+  const getAssetsIn: string[] = await comptroller.getAssetsIn(address);
 
   const balanceOfUnderlyingCalls: Call[] = allMarkets.map((market: string) => ({
     target: market,
@@ -106,6 +120,7 @@ export async function getBalances(
   );
 
   return {
+    getAssetsIn,
     balanceOfUnderlying,
     borrowBalanceCurrent,
     balanceOf,
