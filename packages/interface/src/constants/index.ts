@@ -11,14 +11,17 @@ export const addresses: {
   [chainId: number]: {
     comptroller: string;
     multicall: string;
+    cTokenSwap: string;
   };
 } = {
   1: {
     comptroller: "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
     multicall: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
+    cTokenSwap: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
   },
   1337: {
     comptroller: "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
     multicall: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
+    cTokenSwap: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
   },
 };
