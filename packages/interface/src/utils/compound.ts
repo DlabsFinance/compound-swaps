@@ -10,6 +10,10 @@ import {
 } from "../types";
 import { addresses } from "../constants";
 
+const ethMantissa = 1e18;
+const blocksPerDay = 6570; // 13.15 seconds per block
+const daysPerYear = 365;
+
 export async function getCompoundAllMarkets(
   provider: ethers.providers.Provider,
   chainId: number
@@ -130,4 +134,15 @@ export async function getCompoundMarkets(
   );
 
   return { markets, underlying, borrowRatePerBlock, supplyRatePerBlock };
+}
+
+export function calculateApy(ratePerBlock: BigNumber): number {
+  return (
+    (Math.pow(
+      (ratePerBlock.toNumber() / ethMantissa) * blocksPerDay + 1,
+      daysPerYear
+    ) -
+      1) *
+    100
+  );
 }
