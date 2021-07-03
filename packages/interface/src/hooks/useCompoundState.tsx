@@ -175,9 +175,11 @@ function useCompoundState(
         }
       } catch (err) {
         console.log(err);
-        dispatch({
-          type: ActionType.SET_ERROR,
-        });
+        if (mountedRef.current) {
+          dispatch({
+            type: ActionType.SET_ERROR,
+          });
+        }
       }
     };
     fetchData();

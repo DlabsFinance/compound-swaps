@@ -109,14 +109,21 @@ function useBalancesState(
         }
       } catch (err) {
         console.log(err);
-        dispatch({
-          type: ActionType.SET_ERROR,
-        });
+        if (mountedRef.current) {
+          dispatch({
+            type: ActionType.SET_ERROR,
+          });
+        }
       }
     };
     fetchData();
+    const listener = () => {
+      fetchData();
+    };
+    if (provider !== undefined) provider.on("block", listener);
     return () => {
       mountedRef.current = false;
+      if (provider !== undefined) provider.off("block", listener);
     };
   }, [provider, chainId, address, compoundState]);
 
