@@ -34,6 +34,7 @@ function CollateralSwitch({
 
   return (
     <Switch
+      colorScheme={"green"}
       isReadOnly={!balancesLoaded}
       isChecked={assetIn}
       onChange={onChange}
