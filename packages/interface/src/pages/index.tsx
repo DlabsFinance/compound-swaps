@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import Head from "next/head";
 import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
-import useWeb3React from "../hooks/useWeb3React";
 import useCompound from "../hooks/useCompound";
 
 const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
@@ -12,9 +10,8 @@ const pageDescription: string =
 const pageURL: string = siteURL;
 
 function Home(): JSX.Element {
-  const state = useCompound();
-
-  console.log(state);
+  const compoundState = useCompound();
+  console.log(compoundState);
 
   return (
     <Layout>

@@ -1,4 +1,5 @@
 import { createContext, useContext, Context, ReactNode } from "react";
+import useWeb3React from "./useWeb3React";
 import useCompoundState, { initialState, State } from "./useCompoundState";
 
 const CompoundContext: Context<State> = createContext<State>(initialState);
@@ -12,7 +13,8 @@ export function CompoundProvider({
 }: {
   children: ReactNode;
 }): JSX.Element {
-  const compoundState = useCompoundState();
+  const { provider, chainId } = useWeb3React();
+  const compoundState = useCompoundState(provider, chainId);
   return (
     <CompoundContext.Provider value={compoundState}>
       {children}

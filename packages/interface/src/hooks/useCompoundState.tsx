@@ -1,7 +1,6 @@
 import { useEffect, useRef, useReducer } from "react";
 import { ethers, BigNumber } from "ethers";
 import { Market } from "../types";
-import useWeb3React from "./useWeb3React";
 import {
   getCompoundAllMarkets,
   getCompoundMarkets,
@@ -138,13 +137,15 @@ async function getCompoundState(
   };
 }
 
-function useCompoundState(): State {
+function useCompoundState(
+  provider: ethers.providers.Web3Provider | undefined,
+  chainId: number
+): State {
   const [state, dispatch] = useReducer<(state: State, action: Action) => State>(
     reducer,
     initialState
   );
   const mountedRef = useRef<boolean>(false);
-  const { provider, chainId } = useWeb3React();
 
   useEffect(() => {
     const fetchData = async () => {
