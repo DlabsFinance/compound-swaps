@@ -6,7 +6,7 @@ export async function getTokens(
   provider: ethers.providers.Provider,
   chainId: number,
   underlying: string[]
-) {
+): Promise<{ symbol: string[]; decimals: number[] }> {
   const multicall: Multicall = Multicall__factory.connect(
     addresses[chainId].multicall,
     provider
@@ -60,5 +60,5 @@ export async function getTokens(
     }
   });
 
-  console.log(symbol, decimals);
+  return { symbol, decimals };
 }

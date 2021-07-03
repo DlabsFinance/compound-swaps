@@ -117,8 +117,8 @@ function useWeb3ReactState(): Web3ReactData {
           },
         });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   }, [web3Modal]);
 

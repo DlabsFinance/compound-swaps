@@ -4,7 +4,7 @@ import { siteURL } from "../constants";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import useWeb3React from "../hooks/useWeb3React";
-import { getCompoundAllMarkets, getCompoundMarkets, getTokens } from "../utils";
+import useCompound from "../hooks/useCompound";
 
 const pageTitle: string = "Compound Swaps - Swap your Compound collateral";
 const pageDescription: string =
@@ -12,28 +12,9 @@ const pageDescription: string =
 const pageURL: string = siteURL;
 
 function Home(): JSX.Element {
-  const { provider, chainId } = useWeb3React();
+  const state = useCompound();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (provider) {
-        const allMarkets: string[] = await getCompoundAllMarkets(
-          provider,
-          chainId
-        );
-        console.log(allMarkets);
-        const { markets, underlying } = await getCompoundMarkets(
-          provider,
-          chainId,
-          allMarkets
-        );
-        console.log(markets);
-        console.log(underlying);
-        await getTokens(provider, chainId, underlying);
-      }
-    };
-    fetchData();
-  }, [provider, chainId]);
+  console.log(state);
 
   return (
     <Layout>
