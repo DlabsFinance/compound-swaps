@@ -1,11 +1,11 @@
 import Head from "next/head";
-import { Box, Center, Spinner } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import { siteURL } from "../constants";
 import Balances from "../components/Balances";
-import useCompound from "../hooks/useCompound";
-import useBalances from "../hooks/useBalances";
+import Swap from "../components/Swap";
+import Loading from "../components/Loading";
 
 const pageTitle: string =
   "Compound Swaps - Repay debt with collateral on Compound";
@@ -14,9 +14,6 @@ const pageDescription: string =
 const pageURL: string = siteURL;
 
 function Repay(): JSX.Element {
-  const compoundState = useCompound();
-  const balancesState = useBalances();
-
   return (
     <Layout>
       <Head>
@@ -34,16 +31,10 @@ function Repay(): JSX.Element {
           Repay debt with collateral on{" "}
           <ExternalLink href={"https://compound.finance/"} text={"Compound"} />
         </Header>
-        {compoundState.loaded ? (
-          <Balances
-            compoundState={compoundState}
-            balancesState={balancesState}
-          />
-        ) : (
-          <Center marginTop={2}>
-            <Spinner size={"lg"} />
-          </Center>
-        )}
+        <Loading>
+          <Swap />
+          <Balances />
+        </Loading>
       </Box>
     </Layout>
   );

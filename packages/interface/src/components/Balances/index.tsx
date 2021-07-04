@@ -1,16 +1,13 @@
 import { Box, Flex, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import CollateralSwitch from "./CollateralSwitch";
-import { State as CompoundState } from "../../hooks/useCompound";
-import { State as BalancesState } from "../../hooks/useBalances";
+import useCompound from "../../hooks/useCompound";
+import useBalances from "../../hooks/useBalances";
 import { calculateApy, formatAmount } from "../../utils";
 
-function Balances({
-  compoundState,
-  balancesState,
-}: {
-  compoundState: CompoundState;
-  balancesState: BalancesState;
-}): JSX.Element {
+function Balances(): JSX.Element {
+  const compoundState = useCompound();
+  const balancesState = useBalances();
+
   return (
     <Flex justify="center" items="center">
       <Box overflowY="auto" margin={1}>
