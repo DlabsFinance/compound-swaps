@@ -1,10 +1,9 @@
 import Head from "next/head";
-import { Box } from "@chakra-ui/react";
+import { Box, Center, Text } from "@chakra-ui/react";
 import { Header, ExternalLink } from "../components/Header";
 import Layout from "../components/layout";
 import { siteURL } from "../constants";
 import Balances from "../components/Balances";
-import Swap from "../components/Swap";
 import Loading from "../components/Loading";
 
 const pageTitle: string =
@@ -32,7 +31,9 @@ function Repay(): JSX.Element {
           <ExternalLink href={"https://compound.finance/"} text={"Compound"} />
         </Header>
         <Loading>
-          <Swap />
+          <Center>
+            <Text>Coming Soon</Text>
+          </Center>
           <Balances />
         </Loading>
       </Box>

@@ -2,7 +2,7 @@ import { Box, Flex, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import CollateralSwitch from "./CollateralSwitch";
 import useCompound from "../../hooks/useCompound";
 import useBalances from "../../hooks/useBalances";
-import { calculateApy, formatAmount } from "../../utils";
+import { formatApy, formatBalance } from "../../utils";
 
 function Balances(): JSX.Element {
   const compoundState = useCompound();
@@ -38,19 +38,39 @@ function Balances(): JSX.Element {
                       }
                     />
                   </Td>
-                  <Td isNumeric>{balancesState.loaded ? "0" : "..."}</Td>
                   <Td isNumeric>
-                    {`${formatAmount(
-                      calculateApy(compoundState.supplyRatePerBlock[index]),
-                      2
-                    )}%`}
+                    {balancesState.loaded &&
+                    balancesState.balanceOfUnderlying[index] &&
+                    compoundState.decimals[index]
+                      ? formatBalance(
+                          balancesState.balanceOfUnderlying[index],
+                          compoundState.decimals[index]
+                        )
+                      : "..."}
                   </Td>
-                  <Td isNumeric>{balancesState.loaded ? "0" : "..."}</Td>
                   <Td isNumeric>
-                    {`${formatAmount(
-                      calculateApy(compoundState.borrowRatePerBlock[index]),
-                      2
-                    )}%`}
+                    {`${
+                      compoundState.supplyRatePerBlock[index]
+                        ? formatApy(compoundState.supplyRatePerBlock[index])
+                        : "0"
+                    }%`}
+                  </Td>
+                  <Td isNumeric>
+                    {balancesState.loaded &&
+                    balancesState.borrowBalanceCurrent[index] &&
+                    compoundState.decimals[index]
+                      ? formatBalance(
+                          balancesState.borrowBalanceCurrent[index],
+                          compoundState.decimals[index]
+                        )
+                      : "..."}
+                  </Td>
+                  <Td isNumeric>
+                    {`${
+                      compoundState.borrowRatePerBlock[index]
+                        ? formatApy(compoundState.borrowRatePerBlock[index])
+                        : "0"
+                    }%`}
                   </Td>
                 </Tr>
               )

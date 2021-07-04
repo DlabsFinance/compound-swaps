@@ -6,6 +6,7 @@ import {
   Multicall__factory,
   Comptroller__factory,
   Multicall,
+  CToken,
   CToken__factory,
 } from "../types";
 import { addresses } from "../constants";
@@ -183,4 +184,23 @@ export function calculateApy(ratePerBlock: BigNumber): number {
       1) *
     100
   );
+}
+
+export async function wrappedGetCTokenAmount(
+  provider: ethers.providers.Provider,
+  cTokenAddress: string,
+  tokenAmount: BigNumber
+): Promise<BigNumber> {
+  const cToken: CToken = CToken__factory.connect(cTokenAddress, provider);
+  const cTokenAmount = await getCTokenAmount(cToken, tokenAmount);
+  return cTokenAmount;
+}
+
+export async function getCTokenAmount(
+  cToken: CToken,
+  tokenAmount: BigNumber
+): Promise<BigNumber> {
+  const exchangeRate: BigNumber = await cToken.exchangeRateStored();
+  const cTokenAmount = tokenAmount.mul((10 ** 18).toString()).div(exchangeRate);
+  return cTokenAmount;
 }

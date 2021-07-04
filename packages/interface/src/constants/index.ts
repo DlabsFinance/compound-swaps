@@ -6,6 +6,8 @@ export const saiSymbol: string =
   "0x4441490000000000000000000000000000000000000000000000000000000000";
 export const mkrSymbol: string =
   "0x4d4b520000000000000000000000000000000000000000000000000000000000";
+export const tradeEthAddress: string =
+  "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 export const addresses: {
   [chainId: number]: {
@@ -17,11 +19,11 @@ export const addresses: {
   1: {
     comptroller: "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
     multicall: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
-    cTokenSwap: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
+    cTokenSwap: "0x6B33DF549823f6e9dE7b86485BC1567A97F57f8d",
   },
   1337: {
     comptroller: "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
     multicall: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
-    cTokenSwap: "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441",
+    cTokenSwap: "0x6B33DF549823f6e9dE7b86485BC1567A97F57f8d",
   },
 };
