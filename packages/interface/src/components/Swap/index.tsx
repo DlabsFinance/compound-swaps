@@ -229,7 +229,7 @@ function Swap(): JSX.Element {
           const trade = await fetch(
             `https://api.0x.org/swap/v1/quote?sellToken=${
               token0Address === ethers.constants.AddressZero
-                ? tradeEthAddress
+                ? addresses[chainId].wethAddress
                 : token0Address
             }&buyToken=${
               token1Address === ethers.constants.AddressZero
