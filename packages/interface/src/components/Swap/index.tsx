@@ -235,7 +235,7 @@ function Swap(): JSX.Element {
               token1Address === ethers.constants.AddressZero
                 ? tradeEthAddress
                 : token1Address
-            }&sellAmount=${amount.toString()}&slippagePercentage=1`
+            }&sellAmount=${amount.toString()}&excludedSources=Uniswap_V3&slippagePercentage=1`
           ).then((r) => r.json());
           if (trade.data && trade.to) {
             const signer: Signer = await provider.getUncheckedSigner();
