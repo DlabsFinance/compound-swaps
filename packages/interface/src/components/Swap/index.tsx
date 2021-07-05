@@ -22,12 +22,16 @@ import {
   ERC20__factory,
   CTokenSwap,
   CTokenSwap__factory,
+  Comptroller,
+  Comptroller__factory,
 } from "../../types";
 import {
   formatBalance,
   formatApy,
   stripInputValue,
   wrappedGetCTokenAmount,
+  getPoolKeyAndAddress,
+  getAmounts,
 } from "../../utils";
 import { tradeEthAddress, addresses } from "../../constants";
 
@@ -73,7 +77,7 @@ function Swap(): JSX.Element {
   const token1Balance: BigNumber =
     balancesState.balanceOfUnderlying[token1] ?? BigNumber.from("0");
   const token1Decimals: number = compoundState.decimals[token1] ?? 0;
-  // const cToken1AssetIn: boolean = balancesState.assetsIn[token1] ?? false;
+  const cToken1AssetIn: boolean = balancesState.assetsIn[token1] ?? false;
 
   const token0InputStripped: string = stripInputValue(token0Input);
   const token0InputBN: BigNumber = !(
@@ -83,11 +87,11 @@ function Swap(): JSX.Element {
     ? ethers.utils.parseUnits(token0InputStripped, token0Decimals)
     : BigNumber.from("0");
 
-  // const shouldFlash: boolean = balancesState.borrowBalanceCurrent
-  //   .reduce((accumulator, currentValue) => {
-  //     return accumulator.add(currentValue);
-  //   }, BigNumber.from("0"))
-  //   .gt(BigNumber.from("0"));
+  const shouldFlash: boolean = balancesState.borrowBalanceCurrent
+    .reduce((accumulator, currentValue) => {
+      return accumulator.add(currentValue);
+    }, BigNumber.from("0"))
+    .gt(BigNumber.from("0"));
   const isApproved: boolean = cToken0Allowance.gte(cToken0Amount);
   const isValid: boolean = token0InputBN.lte(token0Balance);
   const isMax: boolean = isValid && token0InputBN.gte(token0Balance);
@@ -169,16 +173,16 @@ function Swap(): JSX.Element {
     }
   }, [token0, token1, token0Input, provider]);
 
-  // const enterMarket = useCallback(async (): Promise<void> => {
-  //   if (!cToken1AssetIn && provider !== undefined) {
-  //     const signer: Signer = await provider.getUncheckedSigner();
-  //     const comptroller: Comptroller = Comptroller__factory.connect(
-  //       addresses[chainId].comptroller,
-  //       signer
-  //     );
-  //     await sendTransaction(comptroller.enterMarkets([cToken1Address]));
-  //   }
-  // }, [cToken1AssetIn, provider, addresses, cToken1Address]);
+  const enterMarket = useCallback(async (): Promise<void> => {
+    if (!cToken1AssetIn && provider !== undefined) {
+      const signer: Signer = await provider.getUncheckedSigner();
+      const comptroller: Comptroller = Comptroller__factory.connect(
+        addresses[chainId].comptroller,
+        signer
+      );
+      await sendTransaction(comptroller.enterMarkets([cToken1Address]));
+    }
+  }, [cToken1AssetIn, provider, cToken1Address, chainId, sendTransaction]);
 
   const approveToken = useCallback(async (): Promise<void> => {
     if (isUsable && isValid && !isApproved && provider) {
@@ -197,60 +201,114 @@ function Swap(): JSX.Element {
     isApproved,
     provider,
     cToken0Address,
-    addresses,
     cToken0Amount,
+    chainId,
+    sendTransaction,
   ]);
 
   const swapToken = useCallback(async (): Promise<void> => {
     if (isApproved && isValid && isUsable && provider) {
       try {
-        const trade = await fetch(
-          `https://api.0x.org/swap/v1/quote?sellToken=${
-            token0Address === ethers.constants.AddressZero
-              ? tradeEthAddress
-              : token0Address
-          }&buyToken=${
-            token1Address === ethers.constants.AddressZero
-              ? tradeEthAddress
-              : token1Address
-          }&sellAmount=${token0InputBN.toString()}&slippagePercentage=1`
-        ).then((r) => r.json());
-        if (trade.data && trade.to) {
-          const signer: Signer = await provider.getUncheckedSigner();
-          const cTokenSwap: CTokenSwap = CTokenSwap__factory.connect(
-            addresses[chainId].cTokenSwap,
-            signer
+        if (shouldFlash) {
+          const flashAmount: BigNumber = cToken0Amount.eq(cToken0Balance)
+            ? token0Balance
+            : token0InputBN;
+          const { pool, poolKey } = getPoolKeyAndAddress(
+            token0Address,
+            chainId
           );
-          await sendTransaction(
-            cTokenSwap.collateralSwap({
-              token0Amount: token0InputBN,
-              cToken0Amount: cToken0Amount,
-              token0: token0Address,
-              token1: token1Address,
-              cToken0: cToken0Address,
-              cToken1: cToken1Address,
-              exchange: trade.to as string,
-              data: trade.data as string,
-            })
+          const { amount, amount0, amount1 } = getAmounts(
+            token0Address !== ethers.constants.AddressZero
+              ? token0Address
+              : addresses[chainId].wethAddress,
+            flashAmount,
+            poolKey
           );
+          const trade = await fetch(
+            `https://api.0x.org/swap/v1/quote?sellToken=${
+              token0Address === ethers.constants.AddressZero
+                ? tradeEthAddress
+                : token0Address
+            }&buyToken=${
+              token1Address === ethers.constants.AddressZero
+                ? tradeEthAddress
+                : token1Address
+            }&sellAmount=${amount.toString()}&slippagePercentage=1`
+          ).then((r) => r.json());
+          if (trade.data && trade.to) {
+            const signer: Signer = await provider.getUncheckedSigner();
+            const cTokenSwap: CTokenSwap = CTokenSwap__factory.connect(
+              addresses[chainId].cTokenSwap,
+              signer
+            );
+            await sendTransaction(
+              cTokenSwap.collateralSwapFlash(amount0, amount1, pool, poolKey, {
+                token0Amount: token0InputBN,
+                cToken0Amount: cToken0Amount,
+                token0:
+                  token0Address !== ethers.constants.AddressZero
+                    ? token0Address
+                    : addresses[chainId].wethAddress,
+                token1: token1Address,
+                cToken0: cToken0Address,
+                cToken1: cToken1Address,
+                exchange: trade.to as string,
+                data: trade.data as string,
+              })
+            );
+          }
+        } else {
+          const trade = await fetch(
+            `https://api.0x.org/swap/v1/quote?sellToken=${
+              token0Address === ethers.constants.AddressZero
+                ? tradeEthAddress
+                : token0Address
+            }&buyToken=${
+              token1Address === ethers.constants.AddressZero
+                ? tradeEthAddress
+                : token1Address
+            }&sellAmount=${token0InputBN.toString()}&slippagePercentage=1`
+          ).then((r) => r.json());
+          if (trade.data && trade.to) {
+            const signer: Signer = await provider.getUncheckedSigner();
+            const cTokenSwap: CTokenSwap = CTokenSwap__factory.connect(
+              addresses[chainId].cTokenSwap,
+              signer
+            );
+            await sendTransaction(
+              cTokenSwap.collateralSwap({
+                token0Amount: token0InputBN,
+                cToken0Amount: cToken0Amount,
+                token0: token0Address,
+                token1: token1Address,
+                cToken0: cToken0Address,
+                cToken1: cToken1Address,
+                exchange: trade.to as string,
+                data: trade.data as string,
+              })
+            );
+          }
         }
       } catch (err) {
         console.log(err);
       }
     }
   }, [
+    shouldFlash,
     isApproved,
     isValid,
     isUsable,
     provider,
     token0Address,
-    tradeEthAddress,
     token1Address,
     token0InputBN,
-    addresses,
     cToken0Amount,
     cToken0Address,
     cToken1Address,
+    token0Balance,
+    cToken0Balance,
+    chainId,
+    sendTransaction,
   ]);
 
   return (
@@ -335,30 +393,50 @@ function Swap(): JSX.Element {
         </Box>
       </Center>
       {provider !== undefined ? (
-        <Center marginTop={1}>
-          {/* <Button
-            marginRight={1}
-            disabled={shouldFlash ? cToken1AssetIn : true}
-            onClick={enterMarket}
-          >
-            Enable Collateral
-          </Button> */}
-          <Button
-            marginRight={1}
-            marginLeft={1}
-            disabled={isApproved || !(isValid && isUsable)}
-            onClick={approveToken}
-          >
-            Approve
-          </Button>
-          <Button
-            marginLeft={1}
-            disabled={!(isApproved && isValid && isUsable)}
-            onClick={swapToken}
-          >
-            Swap
-          </Button>
-        </Center>
+        shouldFlash ? (
+          <Center marginTop={1}>
+            <Button
+              marginRight={1}
+              disabled={cToken1AssetIn}
+              onClick={enterMarket}
+            >
+              Enable Collateral
+            </Button>
+            <Button
+              marginRight={1}
+              marginLeft={1}
+              disabled={isApproved || !(cToken1AssetIn && isValid && isUsable)}
+              onClick={approveToken}
+            >
+              Approve
+            </Button>
+            <Button
+              marginLeft={1}
+              disabled={!(cToken1AssetIn && isApproved && isValid && isUsable)}
+              onClick={swapToken}
+            >
+              Swap
+            </Button>{" "}
+          </Center>
+        ) : (
+          <Center marginTop={1}>
+            <Button
+              marginRight={1}
+              marginLeft={1}
+              disabled={isApproved || !(isValid && isUsable)}
+              onClick={approveToken}
+            >
+              Approve
+            </Button>
+            <Button
+              marginLeft={1}
+              disabled={!(isApproved && isValid && isUsable)}
+              onClick={swapToken}
+            >
+              Swap
+            </Button>
+          </Center>
+        )
       ) : (
         <Center marginTop={1}>
           <WalletButton />
