@@ -28,15 +28,19 @@ function Balances(): JSX.Element {
                 <Tr key={allMarkets}>
                   <Td>{compoundState.symbol[index]}</Td>
                   <Td>
-                    <CollateralSwitch
-                      market={allMarkets}
-                      balancesLoaded={balancesState.loaded}
-                      assetIn={
-                        balancesState.assetsIn[index] !== undefined
-                          ? balancesState.assetsIn[index]
-                          : false
-                      }
-                    />
+                    {compoundState.markets[
+                      index
+                    ].collateralFactorMantissa.toString() !== "0" && (
+                      <CollateralSwitch
+                        market={allMarkets}
+                        balancesLoaded={balancesState.loaded}
+                        assetIn={
+                          balancesState.assetsIn[index] !== undefined
+                            ? balancesState.assetsIn[index]
+                            : false
+                        }
+                      />
+                    )}
                   </Td>
                   <Td isNumeric>
                     {balancesState.loaded &&

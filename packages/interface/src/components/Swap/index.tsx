@@ -78,6 +78,8 @@ function Swap(): JSX.Element {
     balancesState.balanceOfUnderlying[token1] ?? BigNumber.from("0");
   const token1Decimals: number = compoundState.decimals[token1] ?? 0;
   const cToken1AssetIn: boolean = balancesState.assetsIn[token1] ?? false;
+  const cToken1IsCollateral: boolean =
+    compoundState.markets[token1].collateralFactorMantissa.toString() !== "0";
 
   const token0InputStripped: string = stripInputValue(token0Input);
   const token0InputBN: BigNumber = !(
@@ -243,7 +245,7 @@ function Swap(): JSX.Element {
             );
             await sendTransaction(
               cTokenSwap.collateralSwapFlash(amount0, amount1, pool, poolKey, {
-                token0Amount: token0InputBN,
+                token0Amount: amount,
                 cToken0Amount: cToken0Amount,
                 token0:
                   token0Address !== ethers.constants.AddressZero
@@ -397,7 +399,7 @@ function Swap(): JSX.Element {
           <Center marginTop={1}>
             <Button
               marginRight={1}
-              disabled={cToken1AssetIn}
+              disabled={cToken1AssetIn || !cToken1IsCollateral}
               onClick={enterMarket}
             >
               Enable Collateral
@@ -405,14 +407,25 @@ function Swap(): JSX.Element {
             <Button
               marginRight={1}
               marginLeft={1}
-              disabled={isApproved || !(cToken1AssetIn && isValid && isUsable)}
+              disabled={
+                isApproved ||
+                !(cToken1IsCollateral && cToken1AssetIn && isValid && isUsable)
+              }
               onClick={approveToken}
             >
               Approve
             </Button>
             <Button
               marginLeft={1}
-              disabled={!(cToken1AssetIn && isApproved && isValid && isUsable)}
+              disabled={
+                !(
+                  cToken1IsCollateral &&
+                  cToken1AssetIn &&
+                  isApproved &&
+                  isValid &&
+                  isUsable
+                )
+              }
               onClick={swapToken}
             >
               Swap
